@@ -17,14 +17,28 @@ class RoleController extends Controller
     public function create()
     {
         $permissions = Permission::all();
-        return view('roles.form', compact('permissions'));
+        return view('roles.create', compact('permissions'));
     }
 
     public function store(Request $request)
     {
-        $data = $request->validate(['name' => 'required|unique:roles,name','label'=>'nullable','permissions'=>'nullable|array']);
-        $role = Role::create($data);
-        if (!empty($data['permissions'])) $role->permissions()->sync($data['permissions']);
-        return redirect()->route('roles.index');
+        $data = $request->validate([
+            'role_name' => 'required|unique:roles,role_name',
+            'role_description' => 'nullable',
+            'permissions' => 'nullable|array'
+        ]);
+        
+        $role = Role::create([
+            'role_name' => $data['role_name'],
+            'role_description' => $data['role_description'] ?? null,
+            'created_at' => now()
+        ]);
+        
+        if (!empty($data['permissions'])) {
+            $role->permissions()->sync($data['permissions']);
+        }
+        
+        return redirect()->route('roles.index')
+            ->with('success', 'Role created successfully.');
     }
 }

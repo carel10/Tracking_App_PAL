@@ -1,4 +1,4 @@
-@extends('Layouts.app')
+@extends('Layouts.auth')
 
 @section('content')
 <div class="container mt-5">
@@ -23,6 +23,7 @@
                         <div class="mb-3">
                             <button class="btn btn-primary">Login</button>
                             <a href="{{ route('password.forgot') }}" class="btn btn-link">Forgot password?</a>
+                            <a href="{{ route('register') }}" class="btn btn-link">Register</a>
                         </div>
                     </form>
                 </div>

@@ -16,6 +16,11 @@ class AuthController extends Controller
         return view('auth.login');
     }
 
+    public function showRegister()
+    {
+        return view('auth.register');
+    }
+
     public function login(Request $request)
     {
         $credentials = $request->validate([
@@ -23,16 +28,24 @@ class AuthController extends Controller
             'password' => ['required'],
         ]);
 
-        if (Auth::attempt($credentials, $request->boolean('remember'))) {
+        $user = User::where('email', $credentials['email'])->first();
+        
+        if ($user && Hash::check($credentials['password'], $user->password_hash)) {
+            Auth::login($user, $request->boolean('remember'));
             $request->session()->regenerate();
-            // log activity
+            
+            // Update last login
+            $user->update(['last_login' => now()]);
+            
+            // Log activity
             UserActivityLog::create([
-                'user_id' => Auth::id(),
+                'user_id' => $user->user_id,
+                'activity' => 'Logged in to the system',
+                'timestamp' => now(),
                 'ip_address' => $request->ip(),
-                'user_agent' => $request->userAgent(),
-                'action' => 'login',
-                'metadata' => null,
+                'user_agent' => $request->userAgent()
             ]);
+
             return redirect()->intended(route('dashboard'));
         }
 
@@ -44,17 +57,65 @@ class AuthController extends Controller
         if (Auth::check()) {
             UserActivityLog::create([
                 'user_id' => Auth::id(),
+                'activity' => 'Logged out from the system',
+                'timestamp' => now(),
                 'ip_address' => $request->ip(),
                 'user_agent' => $request->userAgent(),
-                'action' => 'logout',
-                'metadata' => null,
             ]);
         }
 
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+        
         return redirect()->route('login');
+    }
+
+    public function register(Request $request)
+    {
+        $data = $request->validate([
+            'full_name' => ['required', 'string', 'max:200'],
+            'username' => ['required', 'string', 'max:100', 'unique:users,username'],
+            'email' => ['required', 'email', 'max:150', 'unique:users,email'],
+            'password' => ['required', 'confirmed', 'min:8'],
+        ]);
+
+        // Default values for new registrations
+        $defaultRoleId = 3; // User role
+        $defaultDivisionId = 1; // IT Division
+
+        $user = User::create([
+            'full_name' => $data['full_name'],
+            'username' => $data['username'],
+            'email' => $data['email'],
+            'password_hash' => Hash::make($data['password']),
+            'role_id' => $defaultRoleId,
+            'division_id' => $defaultDivisionId,
+            'status' => 'pending',
+        ]);
+
+        // Log registration
+        UserActivityLog::create([
+            'user_id' => $user->user_id,
+            'activity' => 'Registered new account',
+            'timestamp' => now(),
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+        ]);
+
+        Auth::login($user);
+        $request->session()->regenerate();
+
+        // Log login activity as well
+        UserActivityLog::create([
+            'user_id' => Auth::id(),
+            'activity' => 'Logged in to the system',
+            'timestamp' => now(),
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+        ]);
+
+        return redirect()->intended(route('dashboard'));
     }
 
     public function showForgot()

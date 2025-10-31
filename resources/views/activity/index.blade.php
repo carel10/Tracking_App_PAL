@@ -1,22 +1,53 @@
 @extends('Layouts.app')
 
 @section('content')
-<div class="container mt-4">
-    <h3>Activity Log</h3>
-    <table class="table">
-        <thead><tr><th>#</th><th>User</th><th>Action</th><th>IP</th><th>When</th></tr></thead>
-        <tbody>
-            @foreach($logs as $log)
-            <tr>
-                <td>{{ $log->id }}</td>
-                <td>{{ optional($log->user)->name ?? 'System' }}</td>
-                <td>{{ $log->action }}</td>
-                <td>{{ $log->ip_address }}</td>
-                <td>{{ $log->created_at }}</td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
-    {{ $logs->links() }}
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h6 class="card-title mb-3">Activity Log</h6>
+
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>User</th>
+                            <th>Activity</th>
+                            <th>IP Address</th>
+                            <th>User Agent</th>
+                            <th>Timestamp</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($logs as $log)
+                        <tr>
+                            <td>{{ $log->log_id }}</td>
+                            <td>
+                                <div>
+                                    <strong>{{ $log->user->full_name ?? 'Unknown' }}</strong><br>
+                                    <small class="text-muted">{{ $log->user->username ?? '-' }}</small>
+                                </div>
+                            </td>
+                            <td>{{ $log->activity }}</td>
+                            <td><code>{{ $log->ip_address ?? '-' }}</code></td>
+                            <td>
+                                <small>{{ Str::limit($log->user_agent ?? '-', 50) }}</small>
+                            </td>
+                            <td>{{ $log->timestamp ? \Carbon\Carbon::parse($log->timestamp)->format('Y-m-d H:i:s') : '-' }}</td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="6" class="text-center">No activity logs found.</td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-3">
+                {{ $logs->links() }}
+            </div>
+        </div>
+    </div>
 </div>
 @endsection

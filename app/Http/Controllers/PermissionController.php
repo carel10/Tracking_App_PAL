@@ -15,13 +15,25 @@ class PermissionController extends Controller
 
     public function create()
     {
-        return view('permissions.form');
+        return view('permissions.create');
     }
 
     public function store(Request $request)
     {
-        $data = $request->validate(['name' => 'required|unique:permissions,name','label'=>'nullable']);
-        Permission::create($data);
-        return redirect()->route('permissions.index');
+        $data = $request->validate([
+            'permission_name' => 'required|unique:permissions,permission_name',
+            'permission_code' => 'required|unique:permissions,permission_code',
+            'category' => 'nullable'
+        ]);
+        
+        Permission::create([
+            'permission_name' => $data['permission_name'],
+            'permission_code' => $data['permission_code'],
+            'category' => $data['category'] ?? null,
+            'created_at' => now()
+        ]);
+        
+        return redirect()->route('permissions.index')
+            ->with('success', 'Permission created successfully.');
     }
 }

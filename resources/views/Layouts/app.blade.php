@@ -37,47 +37,45 @@
 </head>
 <body>
     <div class="main-wrapper">
-        
+        @auth
         <!-- Sidebar -->
         @include('Layouts.sidebar')
+        @endauth
         
         <div class="page-wrapper">
-            
+            @auth
             <!-- Navbar -->
             @include('Layouts.navbar')
+            @endauth
 
             <!-- Main Content -->
             <div class="page-content">
                 @yield('content')
             </div>
 
+            @auth
             <!-- Footer -->
             @include('Layouts.footer')
-        
+            @endauth
         </div>
     </div>
 
-    <!-- core:js -->
-        <script src="{{ asset('assets/vendors/core/core.js') }}"></script>
-    <!-- endinject -->
+    <!-- Core Scripts -->
+    <script src="{{ asset('assets/vendors/core/core.js') }}"></script>
+    <script src="{{ asset('assets/vendors/feather-icons/feather.min.js') }}"></script>
+    <script src="{{ asset('assets/js/template.js') }}"></script>
 
-    <!-- Plugin js for this page -->
-        <script src="{{ asset('assets/vendors/chartjs/Chart.min.js') }}"></script>
-        <script src="{{ asset('assets/vendors/jquery.flot/jquery.flot.js') }}"></script>
-        <script src="{{ asset('assets/vendors/jquery.flot/jquery.flot.resize.js') }}"></script>
-        <script src="{{ asset('assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js') }}"></script>
-        <script src="{{ asset('assets/vendors/apexcharts/apexcharts.min.js') }}"></script>
-    <!-- End plugin js for this page -->
+    <!-- Plugin Scripts -->
+    <script src="{{ asset('assets/vendors/jquery.flot/jquery.flot.js') }}"></script>
+    <script src="{{ asset('assets/vendors/jquery.flot/jquery.flot.resize.js') }}"></script>
+    <script src="{{ asset('assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js') }}"></script>
+    <script src="{{ asset('assets/vendors/apexcharts/apexcharts.min.js') }}"></script>
 
-    <!-- inject:js -->
-        <script src="{{ asset('assets/vendors/feather-icons/feather.min.js') }}"></script>
-        <script src="{{ asset('assets/js/template.js') }}"></script>
-    <!-- endinject -->
+    <!-- Page Specific Scripts -->
+    @yield('scripts')
 
-    <!-- Custom js for this page -->
-        <script src="{{ asset('assets/js/dashboard-light.js') }}"></script>
-        <script src="{{ asset('assets/js/datepicker.js') }}"></script>
-    <!-- End custom js for this page -->
-
+    <!-- Custom Scripts -->
+    <script src="{{ asset('assets/js/dashboard-light.js') }}"></script>
+    <script src="{{ asset('assets/js/datepicker.js') }}"></script>
 </body>
 </html>

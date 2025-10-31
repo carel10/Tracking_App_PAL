@@ -8,14 +8,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class UserActivityLog extends Model
 {
     protected $table = 'user_activity_log';
-    protected $fillable = ['user_id', 'ip_address', 'user_agent', 'action', 'metadata'];
+    protected $primaryKey = 'log_id';
+    public $timestamps = false;
 
-    protected $casts = [
-        'metadata' => 'array',
-    ];
+    protected $fillable = ['user_id', 'activity', 'ip_address', 'user_agent', 'timestamp'];
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id', 'user_id');
     }
 }

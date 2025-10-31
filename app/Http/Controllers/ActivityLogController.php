@@ -9,7 +9,10 @@ class ActivityLogController extends Controller
 {
     public function index()
     {
-        $logs = UserActivityLog::with('user')->orderBy('created_at','desc')->paginate(50);
+        $logs = UserActivityLog::with('user')
+            ->orderBy('timestamp', 'desc')
+            ->paginate(50);
+        
         return view('activity.index', compact('logs'));
     }
 }

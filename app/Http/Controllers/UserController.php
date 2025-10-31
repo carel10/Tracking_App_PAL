@@ -8,119 +8,186 @@ use App\Models\Role;
 use App\Models\Division;
 use App\Models\UserActivityLog;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
+    /**
+     * Display a listing of the users.
+     *
+     * @return \Illuminate\View\View
+     */
     public function index()
     {
-        $users = User::with('roles','division')->orderBy('id','desc')->paginate(20);
+        $users = User::with('role', 'division')
+            ->orderBy('user_id', 'desc')
+            ->paginate(20);
+        
         return view('users.index', compact('users'));
     }
 
+    /**
+     * Show the form for creating a new user.
+     *
+     * @return \Illuminate\View\View
+     */
     public function create()
     {
         $roles = Role::all();
         $divisions = Division::all();
-        return view('users.form', compact('roles','divisions'));
+        
+        return view('users.form', compact('roles', 'divisions'));
     }
 
+    /**
+     * Store a newly created user in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function store(Request $request)
     {
         $data = $request->validate([
-            'name' => 'required|string|max:255',
+            'full_name' => 'required|string|max:200',
+            'username' => 'required|string|max:100|unique:users,username',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:6|confirmed',
-            'division_id' => 'nullable|exists:divisions,id',
-            'roles' => 'nullable|array',
+            'password' => 'required|min:8|confirmed',
+            'division_id' => 'required|exists:divisions,division_id',
+            'role_id' => 'required|exists:roles,role_id',
+            'status' => 'sometimes|in:active,inactive,pending'
         ]);
 
         $user = User::create([
-            'name' => $data['name'],
+            'full_name' => $data['full_name'],
+            'username' => $data['username'],
             'email' => $data['email'],
-            'password' => Hash::make($data['password']),
-            'division_id' => $data['division_id'] ?? null,
-            'is_active' => true,
+            'password_hash' => Hash::make($data['password']),
+            'division_id' => $data['division_id'],
+            'role_id' => $data['role_id'],
+            'status' => $data['status'] ?? 'active',
         ]);
 
-        if (!empty($data['roles'])) {
-            $user->roles()->sync($data['roles']);
+        if (Auth::check()) {
+            UserActivityLog::create([
+                'user_id' => Auth::id(),
+                'activity' => 'Created new user: ' . $user->full_name,
+                'timestamp' => now(),
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->userAgent()
+            ]);
         }
 
-        UserActivityLog::create([
-            'user_id' => auth()->id(),
-            'action' => 'create_user',
-            'ip_address' => request()->ip(),
-            'user_agent' => request()->userAgent(),
-            'metadata' => ['created_user_id' => $user->id],
-        ]);
-
-        return redirect()->route('users.index')->with('success', 'User created');
+        return redirect()->route('users.index')
+            ->with('success', 'User created successfully.');
     }
 
+    /**
+     * Show the form for editing the specified user.
+     *
+     * @param  \App\Models\User  $user
+     * @return \Illuminate\View\View
+     */
     public function edit(User $user)
     {
         $roles = Role::all();
         $divisions = Division::all();
-        return view('users.form', compact('user','roles','divisions'));
+        
+        return view('users.form', compact('user', 'roles', 'divisions'));
     }
 
+    /**
+     * Update the specified user in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\User  $user
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function update(Request $request, User $user)
     {
         $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $user->id,
-            'password' => 'nullable|min:6|confirmed',
-            'division_id' => 'nullable|exists:divisions,id',
-            'roles' => 'nullable|array',
-            'is_active' => 'sometimes|boolean',
+            'full_name' => 'required|string|max:200',
+            'username' => 'required|string|max:100|unique:users,username,' . $user->user_id . ',user_id',
+            'email' => 'required|email|unique:users,email,' . $user->user_id . ',user_id',
+            'password' => 'nullable|min:8|confirmed',
+            'division_id' => 'required|exists:divisions,division_id',
+            'role_id' => 'required|exists:roles,role_id',
+            'status' => 'sometimes|in:active,inactive,pending'
         ]);
 
-        $user->name = $data['name'];
+        $user->full_name = $data['full_name'];
+        $user->username = $data['username'];
         $user->email = $data['email'];
+        $user->division_id = $data['division_id'];
+        $user->role_id = $data['role_id'];
+        $user->status = $data['status'] ?? $user->status;
+        
         if (!empty($data['password'])) {
-            $user->password = Hash::make($data['password']);
+            $user->password_hash = Hash::make($data['password']);
         }
-        $user->division_id = $data['division_id'] ?? null;
-        if (isset($data['is_active'])) $user->is_active = $data['is_active'];
+        
         $user->save();
 
-        $user->roles()->sync($data['roles'] ?? []);
+        if (Auth::check()) {
+            UserActivityLog::create([
+                'user_id' => Auth::id(),
+                'activity' => 'Updated user: ' . $user->full_name,
+                'timestamp' => now(),
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->userAgent()
+            ]);
+        }
 
-        UserActivityLog::create([
-            'user_id' => auth()->id(),
-            'action' => 'update_user',
-            'ip_address' => request()->ip(),
-            'user_agent' => request()->userAgent(),
-            'metadata' => ['updated_user_id' => $user->id],
-        ]);
-
-        return redirect()->route('users.index')->with('success','User updated');
+        return redirect()->route('users.index')
+            ->with('success', 'User updated successfully.');
     }
 
+    /**
+     * Remove the specified user from storage.
+     *
+     * @param  \App\Models\User  $user
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function destroy(User $user)
     {
+        $userName = $user->full_name;
         $user->delete();
-        UserActivityLog::create([
-            'user_id' => auth()->id(),
-            'action' => 'delete_user',
-            'ip_address' => request()->ip(),
-            'user_agent' => request()->userAgent(),
-            'metadata' => ['deleted_user_id' => $user->id],
-        ]);
-        return redirect()->route('users.index')->with('success','User deleted');
+
+        if (Auth::check()) {
+            UserActivityLog::create([
+                'user_id' => Auth::id(),
+                'activity' => 'Deleted user: ' . $userName,
+                'timestamp' => now(),
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->userAgent()
+            ]);
+        }
+
+        return redirect()->route('users.index')
+            ->with('success', 'User deleted successfully.');
     }
 
+    /**
+     * Toggle user active status.
+     *
+     * @param  \App\Models\User  $user
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function toggleActive(User $user)
     {
-        $user->is_active = !$user->is_active;
+        $user->status = ($user->status === 'active') ? 'inactive' : 'active';
         $user->save();
-        UserActivityLog::create([
-            'user_id' => auth()->id(),
-            'action' => $user->is_active ? 'activate_user' : 'deactivate_user',
-            'ip_address' => request()->ip(),
-            'user_agent' => request()->userAgent(),
-            'metadata' => ['toggled_user_id' => $user->id],
-        ]);
-        return redirect()->route('users.index')->with('success','User status changed');
+
+        if (Auth::check()) {
+            UserActivityLog::create([
+                'user_id' => Auth::id(),
+                'activity' => 'Changed status of user ' . $user->full_name . ' to ' . $user->status,
+                'timestamp' => now(),
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->userAgent()
+            ]);
+        }
+
+        return redirect()->route('users.index')
+            ->with('success', 'User status changed successfully.');
     }
 }

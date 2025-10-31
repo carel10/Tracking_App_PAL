@@ -1,59 +1,279 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Tracking App - User Management System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Sistem manajemen user yang lengkap dengan fitur authentication, role-based access control, activity logging, dan dashboard monitoring. Dibangun dengan Laravel 11 dan NobleUI Admin Template.
 
-## About Laravel
+## Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### ✅ User Management
+- Create, Read, Update, Delete users
+- User status management (Active, Inactive, Pending)
+- Role and division assignment
+- User profile management
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### ✅ Authentication
+- User registration dengan validasi
+- Login dengan email/password
+- Logout dengan activity logging
+- Session management
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### ✅ Role & Permission System
+- Role management (Super Admin, Admin, User)
+- Permission management dengan kategori
+- Role-Permission mapping
+- Division management
 
-## Learning Laravel
+### ✅ Dashboard
+- Statistics cards (Total Users, Active Users, Login Today)
+- Recent users list
+- Recent activity logs
+- User detail modal
+- Permission mapping display
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+### ✅ Activity Logging
+- Login/logout tracking
+- User CRUD operations logging
+- IP address dan user agent tracking
+- Searchable activity history
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### ✅ Modern UI
+- Clean dan responsive design dengan NobleUI
+- Bootstrap 5 based
+- Feather Icons integration
+- User-friendly forms dan tables
+- Dynamic user profile display
 
-## Laravel Sponsors
+## Technology Stack
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+- **Framework**: Laravel 11
+- **PHP**: 8.2+
+- **Database**: MySQL
+- **UI Framework**: Bootstrap 5
+- **Admin Template**: NobleUI
+- **Icons**: Feather Icons
+- **Frontend**: Blade Templates
 
-### Premium Partners
+## Installation
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### Prerequisites
+- PHP 8.2 or higher
+- Composer
+- MySQL
+- Node.js & NPM (optional, for assets)
 
-## Contributing
+### Setup Instructions
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+1. **Clone Repository**
+```bash
+git clone <repository-url>
+cd Tracking_App
+```
 
-## Code of Conduct
+2. **Install Dependencies**
+```bash
+composer install
+npm install
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+3. **Environment Configuration**
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-## Security Vulnerabilities
+4. **Configure Database**
+Edit `.env` file:
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=tracking_app
+DB_USERNAME=root
+DB_PASSWORD=
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+5. **Run Migrations**
+```bash
+php artisan migrate
+```
+
+6. **Seed Database**
+```bash
+php artisan db:seed
+```
+
+7. **Serve Application**
+```bash
+php artisan serve
+```
+
+Visit: `http://localhost:8000`
+
+## Default Credentials
+
+Setelah seeder berhasil dijalankan, gunakan credentials berikut:
+
+| Role | Email | Password |
+|------|-------|----------|
+| Super Admin | superadmin@example.com | password123 |
+| Admin | admin@example.com | password123 |
+| User | user@example.com | password123 |
+
+**⚠️ PENTING**: Ubah password default di production environment!
+
+## Database Structure
+
+### Tables
+- **users** - User accounts
+  - user_id (PK), username, email, full_name
+  - password_hash, role_id (FK), division_id (FK)
+  - status (active/inactive/pending), last_login
+  
+- **roles** - User roles
+  - role_id (PK), role_name, role_description, created_at
+  
+- **divisions** - Organizational divisions
+  - division_id (PK), division_name
+  
+- **permissions** - System permissions
+  - permission_id (PK), permission_name, permission_code
+  - category, created_at
+  
+- **role_permissions** - Pivot table
+  - role_id (FK), permission_id (FK)
+  
+- **user_activity_log** - Activity logs
+  - log_id (PK), user_id (FK), activity
+  - ip_address, user_agent, timestamp
+
+## Project Structure
+
+```
+Tracking_App/
+├── app/
+│   ├── Http/Controllers/
+│   │   ├── AuthController.php
+│   │   ├── UserController.php
+│   │   ├── RoleController.php
+│   │   ├── PermissionController.php
+│   │   ├── DashboardController.php
+│   │   └── ActivityLogController.php
+│   └── Models/
+│       ├── User.php
+│       ├── Role.php
+│       ├── Division.php
+│       ├── Permission.php
+│       └── UserActivityLog.php
+├── database/
+│   ├── migrations/
+│   └── seeders/
+│       └── DatabaseSeeder.php
+├── resources/
+│   └── views/
+│       ├── auth/
+│       ├── users/
+│       ├── roles/
+│       ├── permissions/
+│       ├── activity/
+│       ├── dashboard.blade.php
+│       └── Layouts/
+├── routes/
+│   └── web.php
+└── public/
+    └── assets/
+```
+
+## Routes
+
+### Public Routes
+- `GET /` - Redirect to login
+- `GET /login` - Show login form
+- `POST /login` - Process login
+- `GET /register` - Show registration form
+- `POST /register` - Process registration
+
+### Protected Routes (Require Auth)
+- `GET /dashboard` - Dashboard
+- `GET /users` - List users
+- `GET /users/create` - Create user form
+- `POST /users` - Store user
+- `GET /users/{user}/edit` - Edit user form
+- `PUT /users/{user}` - Update user
+- `DELETE /users/{user}` - Delete user
+- `PATCH /users/{user}/toggle` - Toggle status
+
+- `GET /roles` - List roles
+- `GET /roles/create` - Create role form
+- `POST /roles` - Store role
+
+- `GET /permissions` - List permissions
+- `GET /permissions/create` - Create permission form
+- `POST /permissions` - Store permission
+
+- `GET /activity` - Activity logs
+
+## Features Detail
+
+### User Management
+- Full CRUD operations
+- Status toggle (active/inactive)
+- Role and division assignment
+- Activity logging untuk setiap action
+
+### Dashboard
+- Real-time statistics
+- Recent users with pagination
+- Recent activity logs
+- User detail modal dengan edit capabilities
+- Permission mapping overview
+
+### Security
+- Password hashing dengan bcrypt
+- CSRF protection
+- SQL injection prevention (Eloquent ORM)
+- XSS prevention (Blade escaping)
+- Session security
+- Activity audit trail
+
+## Development
+
+### Code Style
+Mengikuti PSR-12 coding standards dan Laravel best practices.
+
+### Contributing
+1. Fork the repository
+2. Create feature branch
+3. Commit changes
+4. Push to branch
+5. Create Pull Request
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is open-sourced software licensed under the MIT license.
+
+## Support
+
+Untuk support atau pertanyaan, hubungi development team.
+
+## Changelog
+
+### Version 2.0 (Latest)
+- ✅ Perbaikan lengkap sistem user management
+- ✅ Implementasi role-based access control
+- ✅ Activity logging comprehensive
+- ✅ Modern UI dengan NobleUI
+- ✅ Database schema optimization
+- ✅ Clean code implementation
+
+### Version 1.0
+- Initial release
+
+## Authors
+
+Development Team - Tracking App
+
+## Acknowledgments
+
+- Laravel Framework
+- NobleUI Admin Template
+- Bootstrap Team
+- Feather Icons

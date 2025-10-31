@@ -6,6 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Division extends Model
 {
-    protected $fillable = ['name'];
+    protected $primaryKey = 'division_id';
+
+    public $timestamps = false;
+
+    protected $fillable = ['division_name'];
 }
 
