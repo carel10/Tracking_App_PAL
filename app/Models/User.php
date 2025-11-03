@@ -1,70 +1,58 @@
 <?php
 
+/**
+ * User Model
+ * 
+ * Model ini merepresentasikan tabel users dalam database.
+ * User adalah entitas utama dalam sistem untuk autentikasi dan otorisasi.
+ * 
+ * @package App\Models
+ * @author Tracking App Team
+ */
+
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\Hash;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use Notifiable;
 
     /**
-     * The primary key for the model.
-     *
+     * Nama tabel yang digunakan oleh model ini
      * @var string
      */
-    protected $primaryKey = 'user_id';
+    protected $table = 'users';
 
     /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
+     * Field-field yang dapat diisi secara mass assignment
+     * - full_name: Nama lengkap user
+     * - email: Alamat email untuk login
+     * - password_hash: Hash dari password user (tidak disimpan plain text)
+     * - division_id: ID divisi tempat user bekerja
+     * - status: Status user (active, inactive, suspended)
+     * - sso_subject: Subject ID untuk SSO authentication (opsional)
+     * - sso_issuer: Issuer untuk SSO authentication (opsional)
+     * 
+     * @var array
      */
     protected $fillable = [
-        'username',
+        'full_name',
         'email',
         'password_hash',
-        'full_name',
         'division_id',
-        'role_id',
         'status',
-        'last_login'
+        'sso_subject',
+        'sso_issuer',
     ];
 
     /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
-    protected $hidden = [
-        'password_hash',
-        'password'
-    ];
-
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'last_login' => 'datetime',
-            'status' => 'string',
-        ];
-    }
-
-    /**
-     * Get the password for authentication.
-     *
-     * @return string
+     * Mendapatkan password untuk autentikasi Laravel
+     * Method ini digunakan oleh Laravel Auth untuk memverifikasi password
+     * 
+     * @return string Hash password dari database
      */
     public function getAuthPassword()
     {
@@ -72,45 +60,57 @@ class User extends Authenticatable
     }
 
     /**
-     * Set the password attribute and hash it.
-     *
-     * @param  string  $value
-     * @return void
+     * Relasi: User belongs to Division
+     * Setiap user memiliki satu divisi tempat mereka bekerja
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function setPasswordAttribute($value)
+    public function division()
     {
-        if (!empty($value)) {
-            $this->attributes['password_hash'] = Hash::make($value);
-        }
+        return $this->belongsTo(Division::class, 'division_id');
     }
 
     /**
-     * Relationship to Division model.
-     *
-     * @return BelongsTo
+     * Relasi: User has many AuthSessions
+     * User dapat memiliki banyak sesi aktif (multiple device login)
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function division(): BelongsTo
+    public function authSessions()
     {
-        return $this->belongsTo(Division::class, 'division_id', 'division_id');
+        return $this->hasMany(AuthSession::class, 'user_id');
     }
 
     /**
-     * Relationship to Role model.
-     *
-     * @return BelongsTo
+     * Relasi: User has many AuditLogs (sebagai actor)
+     * Mencatat semua aktivitas yang dilakukan oleh user ini
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function role(): BelongsTo
+    public function auditLogs()
     {
-        return $this->belongsTo(Role::class, 'role_id', 'role_id');
+        return $this->hasMany(AuditLog::class, 'actor_user_id');
     }
 
     /**
-     * Relationship to UserActivityLog model.
-     *
-     * @return HasMany
+     * Relasi: User has many AdminScopes
+     * User dapat memiliki beberapa scope admin untuk divisi tertentu
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function activityLogs(): HasMany
+    public function adminScopes()
     {
-        return $this->hasMany(UserActivityLog::class, 'user_id', 'user_id');
+        return $this->hasMany(AdminScope::class, 'admin_user_id');
+    }
+
+    /**
+     * Relasi: User belongs to many Roles
+     * User dapat memiliki beberapa role sekaligus (many-to-many)
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class, 'user_roles', 'user_id', 'role_id');
     }
 }

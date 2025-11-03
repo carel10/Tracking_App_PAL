@@ -21,19 +21,28 @@
                     <tbody>
                         @forelse($logs as $log)
                         <tr>
-                            <td>{{ $log->log_id }}</td>
+                            <td>{{ $log->id }}</td>
                             <td>
                                 <div>
-                                    <strong>{{ $log->user->full_name ?? 'Unknown' }}</strong><br>
-                                    <small class="text-muted">{{ $log->user->username ?? '-' }}</small>
+                                    @if($log->actor)
+                                        <strong>{{ $log->actor->full_name ?? 'Unknown' }}</strong><br>
+                                        <small class="text-muted">{{ $log->actor->email ?? '-' }}</small>
+                                    @else
+                                        <strong>System / Unknown</strong><br>
+                                        <small class="text-muted">-</small>
+                                    @endif
                                 </div>
                             </td>
-                            <td>{{ $log->activity }}</td>
-                            <td><code>{{ $log->ip_address ?? '-' }}</code></td>
                             <td>
-                                <small>{{ Str::limit($log->user_agent ?? '-', 50) }}</small>
+                                <span class="badge bg-primary">{{ $log->action }}</span>
                             </td>
-                            <td>{{ $log->timestamp ? \Carbon\Carbon::parse($log->timestamp)->format('Y-m-d H:i:s') : '-' }}</td>
+                            <td>
+                                <code>{{ isset($log->details['ip_address']) ? $log->details['ip_address'] : '-' }}</code>
+                            </td>
+                            <td>
+                                <small>{{ Str::limit(isset($log->details['user_agent']) ? $log->details['user_agent'] : '-', 50) }}</small>
+                            </td>
+                            <td>{{ $log->created_at ? $log->created_at->format('Y-m-d H:i:s') : '-' }}</td>
                         </tr>
                         @empty
                         <tr>

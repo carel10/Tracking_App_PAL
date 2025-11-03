@@ -34,9 +34,39 @@
         </a>
       </li>
       <li class="nav-item">
+        <a href="{{ route('divisions.index') }}" class="nav-link">
+          <i class="link-icon" data-feather="building"></i>
+          <span class="link-title">Divisions</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="{{ route('delegated-admins.index') }}" class="nav-link">
+          <i class="link-icon" data-feather="user-check"></i>
+          <span class="link-title">Delegated Admin</span>
+        </a>
+      </li>
+      <li class="nav-item">
         <a href="{{ route('activity.index') }}" class="nav-link">
           <i class="link-icon" data-feather="activity"></i>
           <span class="link-title">Activity</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="{{ route('audit-logs.index') }}" class="nav-link">
+          <i class="link-icon" data-feather="file-text"></i>
+          <span class="link-title">Audit Logs</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="{{ route('session-monitoring.index') }}" class="nav-link">
+          <i class="link-icon" data-feather="monitor"></i>
+          <span class="link-title">Session Monitoring</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="{{ route('settings.index') }}" class="nav-link">
+          <i class="link-icon" data-feather="settings"></i>
+          <span class="link-title">Settings</span>
         </a>
       </li>
 
