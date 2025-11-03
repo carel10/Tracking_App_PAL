@@ -284,7 +284,9 @@
                       <pre class="bg-light p-3 rounded" style="max-height: 400px; overflow-y: auto;"><code>{{ json_encode($log->details, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) }}</code></pre>
                     </div>
                     <div class="modal-footer">
-                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i data-feather="x" class="icon-sm me-2"></i> Close
+                      </button>
                       <button type="button" class="btn btn-primary" onclick="copyToClipboard('{{ $log->id }}')">
                         <i data-feather="copy" class="icon-sm me-2"></i> Copy JSON
                       </button>

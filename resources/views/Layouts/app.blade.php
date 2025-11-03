@@ -33,6 +33,49 @@
         <link rel="stylesheet" href="{{ asset('assets/css/demo1/style.css') }}">
     <!-- End layout styles -->
 
+    <!-- Custom styles for sidebar icons and active state -->
+    <style>
+        /* Ensure sidebar icons are visible */
+        .sidebar .nav-link .link-icon {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+        
+        .sidebar .nav-link .link-icon svg {
+            width: 100%;
+            height: 100%;
+            stroke-width: 2;
+        }
+        
+        /* Active state styling */
+        .sidebar .nav-link.active {
+            background-color: rgba(115, 103, 240, 0.1);
+            color: #7367f0 !important;
+            border-left: 3px solid #7367f0;
+        }
+        
+        .sidebar .nav-link.active .link-icon {
+            color: #7367f0;
+        }
+        
+        .sidebar .nav-link.active .link-title {
+            color: #7367f0;
+            font-weight: 600;
+        }
+        
+        /* Hover effect */
+        .sidebar .nav-link:hover {
+            background-color: rgba(115, 103, 240, 0.05);
+        }
+        
+        .sidebar .nav-link:hover .link-icon {
+            color: #7367f0;
+        }
+    </style>
+
         <link rel="shortcut icon" href="{{ asset('assets/images/favicon.png') }}" />
 </head>
 <body>
@@ -77,5 +120,14 @@
     <!-- Custom Scripts -->
     <script src="{{ asset('assets/js/dashboard-light.js') }}"></script>
     <script src="{{ asset('assets/js/datepicker.js') }}"></script>
+    
+    <!-- Initialize feather icons after page load -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof feather !== 'undefined') {
+                feather.replace();
+            }
+        });
+    </script>
 </body>
 </html>

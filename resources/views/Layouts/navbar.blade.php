@@ -21,7 +21,7 @@
                             <p class="tx-16 fw-bolder">{{ Auth::user()->full_name ?? 'User' }}</p>
                             <p class="tx-12 text-muted">{{ Auth::user()->email ?? '' }}</p>
                             <p class="tx-12">
-                                <span class="badge bg-info">{{ Auth::user()->role->role_name ?? 'User' }}</span>
+                                <span class="badge bg-info">{{ Auth::user()->roles->first()->name ?? 'User' }}</span>
                             </p>
                         </div>
                     </div>

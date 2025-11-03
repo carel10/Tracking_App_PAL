@@ -307,8 +307,12 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn btn-primary">Save Configuration</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            <i data-feather="x" class="icon-sm me-2"></i> Cancel
+          </button>
+          <button type="submit" class="btn btn-primary">
+            <i data-feather="save" class="icon-sm me-2"></i> Save Configuration
+          </button>
         </div>
       </form>
     </div>

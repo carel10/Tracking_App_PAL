@@ -1,10 +1,10 @@
 @extends('Layouts.auth')
 
 @section('content')
-<div class="container d-flex align-items-center justify-content-center" style="min-height: 100vh;">
+<div class="container d-flex align-items-center justify-content-center" style="min-height: 100vh; padding: 2rem;">
     <div class="row w-100 justify-content-center">
         <div class="col-md-5 col-lg-4">
-            <div class="card">
+            <div class="card shadow-sm">
                 <div class="card-body p-5">
                     <div class="text-center mb-4">
                         <h3 class="mb-2">Welcome Back</h3>

@@ -20,7 +20,7 @@ class RoleController extends Controller
     {
         $roles = Role::with(['permissions', 'users', 'division'])
             ->withCount('users')
-            ->orderBy('created_at', 'desc')
+            ->orderBy('id', 'desc')
             ->paginate(20);
         
         return view('roles.index', compact('roles'));

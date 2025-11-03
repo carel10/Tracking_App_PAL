@@ -17,7 +17,9 @@
                             <input type="email" name="email" class="form-control" required>
                         </div>
                         <div class="mb-3">
-                            <button class="btn btn-primary">Send Reset</button>
+                            <button class="btn btn-primary">
+                                <i data-feather="mail" class="icon-sm me-2"></i> Send Reset
+                            </button>
                         </div>
                     </form>
                 </div>
