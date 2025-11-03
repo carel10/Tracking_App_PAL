@@ -6,6 +6,16 @@
     }
     return in_array($currentRoute, $routes);
   };
+  
+  $user = Auth::user();
+  $isSuperAdmin = $user ? $user->hasRole('Super Admin') : false;
+  
+  // Helper function untuk check permission dengan safe handling
+  $hasPermission = function($permissionName, $module = null) use ($user, $isSuperAdmin) {
+    if (!$user) return false;
+    if ($isSuperAdmin) return true;
+    return $user->hasPermission($permissionName, $module);
+  };
 @endphp
 
 <nav class="sidebar">
@@ -25,60 +35,75 @@
       </li>
 
       <li class="nav-item nav-category">Application</li>
+      @if($isSuperAdmin || $hasPermission('View Users', 'users'))
       <li class="nav-item">
         <a href="{{ route('users.index') }}" class="nav-link {{ $isActive(['users.index', 'users.create', 'users.edit', 'users.sessions']) ? 'active' : '' }}">
-          <i class="link-icon" data-feather="users"></i>
           <span class="link-title">Users</span>
         </a>
       </li>
+      @endif
+      @if($isSuperAdmin || $hasPermission('View Roles', 'roles'))
       <li class="nav-item">
         <a href="{{ route('roles.index') }}" class="nav-link {{ $isActive(['roles.index', 'roles.create', 'roles.edit', 'roles.users']) ? 'active' : '' }}">
-          <i class="link-icon" data-feather="shield"></i>
           <span class="link-title">Roles</span>
         </a>
       </li>
+      @endif
+      @if($isSuperAdmin || $hasPermission('View Permissions', 'permissions'))
       <li class="nav-item">
         <a href="{{ route('permissions.index') }}" class="nav-link {{ $isActive(['permissions.index', 'permissions.create', 'permissions.edit']) ? 'active' : '' }}">
-          <i class="link-icon" data-feather="key"></i>
           <span class="link-title">Permissions</span>
         </a>
       </li>
+      @endif
+      @if($isSuperAdmin || $hasPermission('Manage Divisions', 'divisions'))
       <li class="nav-item">
         <a href="{{ route('divisions.index') }}" class="nav-link {{ $isActive(['divisions.index', 'divisions.create', 'divisions.edit', 'divisions.users', 'divisions.roles']) ? 'active' : '' }}">
           <i class="link-icon" data-feather="building"></i>
           <span class="link-title">Divisions</span>
         </a>
       </li>
+      @endif
+      @if($isSuperAdmin)
       <li class="nav-item">
         <a href="{{ route('delegated-admins.index') }}" class="nav-link {{ $isActive('delegated-admins.index') ? 'active' : '' }}">
           <i class="link-icon" data-feather="user-check"></i>
           <span class="link-title">Delegated Admin</span>
         </a>
       </li>
+      @endif
+      @if($isSuperAdmin || $hasPermission('View Activity', 'activity'))
       <li class="nav-item">
         <a href="{{ route('activity.index') }}" class="nav-link {{ $isActive('activity.index') ? 'active' : '' }}">
           <i class="link-icon" data-feather="activity"></i>
           <span class="link-title">Activity</span>
         </a>
       </li>
+      @endif
+      @if($isSuperAdmin || $hasPermission('View Audit Logs', 'audit'))
       <li class="nav-item">
         <a href="{{ route('audit-logs.index') }}" class="nav-link {{ $isActive('audit-logs.index') ? 'active' : '' }}">
           <i class="link-icon" data-feather="file-text"></i>
           <span class="link-title">Audit Logs</span>
         </a>
       </li>
+      @endif
+      @if($isSuperAdmin)
       <li class="nav-item">
         <a href="{{ route('session-monitoring.index') }}" class="nav-link {{ $isActive('session-monitoring.index') ? 'active' : '' }}">
           <i class="link-icon" data-feather="monitor"></i>
           <span class="link-title">Session Monitoring</span>
         </a>
       </li>
+      @endif
+      @if($isSuperAdmin || $hasPermission('Manage Settings', 'settings'))
       <li class="nav-item">
         <a href="{{ route('settings.index') }}" class="nav-link {{ $isActive('settings.index') ? 'active' : '' }}">
           <i class="link-icon" data-feather="settings"></i>
           <span class="link-title">Settings</span>
         </a>
       </li>
+      @endif
 
       <li class="nav-item nav-category">Account</li>
       <li class="nav-item">

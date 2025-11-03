@@ -15,6 +15,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\Permission;
 
 class User extends Authenticatable
 {
@@ -112,5 +113,64 @@ class User extends Authenticatable
     public function roles()
     {
         return $this->belongsToMany(Role::class, 'user_roles', 'user_id', 'role_id');
+    }
+
+    /**
+     * Check if user has a specific role
+     * 
+     * @param string|array $roleName Role name(s) to check
+     * @return bool
+     */
+    public function hasRole($roleName)
+    {
+        $roleNames = is_array($roleName) ? $roleName : [$roleName];
+        return $this->roles()->whereIn('name', $roleNames)->exists();
+    }
+
+    /**
+     * Check if user has a specific permission through roles
+     * 
+     * @param string $permissionName Permission name to check
+     * @param string|null $module Optional module filter
+     * @return bool
+     */
+    public function hasPermission($permissionName, $module = null)
+    {
+        $query = $this->roles()
+            ->whereHas('permissions', function($q) use ($permissionName, $module) {
+                $q->where('name', $permissionName);
+                if ($module) {
+                    $q->where('module', $module);
+                }
+            });
+        
+        return $query->exists();
+    }
+
+    /**
+     * Check if user has any of the given roles (Super Admin usually bypasses all checks)
+     * 
+     * @param array $roleNames
+     * @return bool
+     */
+    public function hasAnyRole(array $roleNames)
+    {
+        // Super Admin usually has full access
+        if ($this->hasRole('Super Admin')) {
+            return true;
+        }
+        return $this->hasRole($roleNames);
+    }
+
+    /**
+     * Get all permissions through user's roles
+     * 
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function getAllPermissions()
+    {
+        return Permission::whereHas('roles', function($query) {
+            $query->whereIn('roles.id', $this->roles()->pluck('roles.id'));
+        })->get()->unique('id');
     }
 }

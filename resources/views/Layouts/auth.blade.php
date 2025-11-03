@@ -38,8 +38,8 @@
 <body>
     <div class="main-wrapper">
         <!-- Main Content -->
-        <div class="page-wrapper">
-            <div class="page-content">
+        <div class="page-wrapper full-page">
+            <div class="page-content d-flex align-items-center justify-content-center">
                 @yield('content')
             </div>
         </div>
