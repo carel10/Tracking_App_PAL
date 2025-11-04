@@ -6,10 +6,10 @@
     }
     return in_array($currentRoute, $routes);
   };
-  
+
   $user = Auth::user();
   $isSuperAdmin = $user ? $user->hasRole('Super Admin') : false;
-  
+
   // Helper function untuk check permission dengan safe handling
   $hasPermission = function($permissionName, $module = null) use ($user, $isSuperAdmin) {
     if (!$user) return false;
@@ -38,6 +38,7 @@
       @if($isSuperAdmin || $hasPermission('View Users', 'users'))
       <li class="nav-item">
         <a href="{{ route('users.index') }}" class="nav-link {{ $isActive(['users.index', 'users.create', 'users.edit', 'users.sessions']) ? 'active' : '' }}">
+          <i class="link-icon" data-feather="users"></i>
           <span class="link-title">Users</span>
         </a>
       </li>
@@ -45,6 +46,7 @@
       @if($isSuperAdmin || $hasPermission('View Roles', 'roles'))
       <li class="nav-item">
         <a href="{{ route('roles.index') }}" class="nav-link {{ $isActive(['roles.index', 'roles.create', 'roles.edit', 'roles.users']) ? 'active' : '' }}">
+          <i class="link-icon" data-feather="shield"></i>
           <span class="link-title">Roles</span>
         </a>
       </li>
@@ -52,6 +54,7 @@
       @if($isSuperAdmin || $hasPermission('View Permissions', 'permissions'))
       <li class="nav-item">
         <a href="{{ route('permissions.index') }}" class="nav-link {{ $isActive(['permissions.index', 'permissions.create', 'permissions.edit']) ? 'active' : '' }}">
+          <i class="link-icon" data-feather="lock"></i>
           <span class="link-title">Permissions</span>
         </a>
       </li>
@@ -59,7 +62,7 @@
       @if($isSuperAdmin || $hasPermission('Manage Divisions', 'divisions'))
       <li class="nav-item">
         <a href="{{ route('divisions.index') }}" class="nav-link {{ $isActive(['divisions.index', 'divisions.create', 'divisions.edit', 'divisions.users', 'divisions.roles']) ? 'active' : '' }}">
-          <i class="link-icon" data-feather="building"></i>
+          <i class="link-icon" data-feather="briefcase"></i>
           <span class="link-title">Divisions</span>
         </a>
       </li>
