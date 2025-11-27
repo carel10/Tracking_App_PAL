@@ -12,10 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('permissions', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->string('name', 150);
+            $table->id();
+            $table->string('name');
+            $table->string('code')->unique();
             $table->string('module', 100);
             $table->text('description')->nullable();
+            $table->timestamps();
         });
     }
 
